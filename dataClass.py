@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from typing import Generic, TypeVar
 
 from . import abnormal
@@ -16,13 +16,13 @@ class ListOfData(list, Generic[DictOfData_T]): ...
 
 class DictOfData(dict):
     type: str
-    parameters: dict | d1 | ListOfData
+    parameters: Union[dict, d1, ListOfData]
 
     def __init__(self, type: str, parameters: dict):
         super().__init__()
 
         self.type: str = type
-        self.parameters: dict | d1 | ListOfData = parameters
+        self.parameters: Union[dict, d1, ListOfData] = parameters
 
     def check(self) -> bool:
         # 检查 data 是否包含 ["type", "parameters"]

@@ -2,10 +2,12 @@
 
 adminLTE 的异常类
 """
-from fileMapping.information import error
+from typing import Union, List
 
+# from fileMapping.information import error
+from fileMapping import abnormal
 
-class File(error.Mistake):
+class File(abnormal.Mistake):
     def __init__(self, fileName: str, error: Exception, traceback: str):
         """
         这是一个 file 异常
@@ -32,7 +34,7 @@ class Fileread(File):
         return f"文件在打开时发生异常 文件: {self.file} error: {self.error}"
 
 
-class Template(error.Mistake):
+class Template(abnormal.Mistake):
     def __init__(self): ...
 
 
@@ -59,7 +61,7 @@ class TheWayIsMissing(HowItWasGenerated):
 
 
 class Attribute(Template):
-    def __init__(self, missingAttributes: str, attributes: list[str]):
+    def __init__(self, missingAttributes: str, attributes: List[str]):
         self.missingAttributes = missingAttributes
         self.attributes = [i for i in attributes if not (i.startswith("__") or i == 'html')]
         self.listOfLanguages = [
@@ -104,7 +106,7 @@ class Specification(Template):
 
 
 class TemplateTypeError(Template):
-    def __init__(self, type, typeShouldBe: list| tuple):
+    def __init__(self, type, typeShouldBe: Union[list, tuple]):
         self.type = type
         self.typeShouldBe = typeShouldBe
         self.listOfLanguages = [
@@ -118,5 +120,5 @@ class TemplateTypeError(Template):
         return f"类型错误 不应该是: {self.type} 应该为: {self.typeShouldBe}"
 
 
-template_error_all = (Template, HowItWasGenerated, TemplateTypeError, \
+template_error_all = (Template, HowItWasGenerated, TemplateTypeError,
                       Attribute, Notemplates, Specification, TemplateTypeError)

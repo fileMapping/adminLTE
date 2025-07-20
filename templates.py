@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import rich
 
@@ -47,5 +48,4 @@ class Mainly(component.Commons):
             return self._regis("index", side=side, topBar=topBar, subject=subject, theBarIsLow=theBarIsLow)
 
 
-mainly: Mainly | component.Side | component.TopBar | \
-        component.Subject | component.TheBarIsLow = Mainly(config.path)
+mainly: Union[Mainly, component.Side, component.TopBar, component.Subject, component.TheBarIsLow] = Mainly(config.path)

@@ -2,11 +2,13 @@ import os
 import json
 import traceback
 import types
-from typing import Dict, Any
+from typing import Dict, Any, Union, List
 
 import rich
-from fileMapping import File, method
-from fileMapping import appRegister
+# from fileMapping import File, method
+from fileMapping.core import decorators
+from fileMapping.core import helperFunctions
+# from fileMapping import appRegister
 
 # from . import mainly
 from . import templates
@@ -15,9 +17,12 @@ from . import abnormal
 from . import dataClass
 
 
-@appRegister
+app = decorators.tagAppRegistration(config.__name__)
+
+
+@app()
 def specificTemplates(path: str, templatePath: str = None) \
-        -> str | abnormal.Fileread | abnormal.Attribute | abnormal.TheWayIsMissing:
+        -> Union[str, abnormal.Fileread, abnormal.Attribute, abnormal.TheWayIsMissing]:
     """
     加载一个特定模板
     json -> dict -> html
@@ -35,7 +40,6 @@ def specificTemplates(path: str, templatePath: str = None) \
     if isinstance(file_data, abnormal.Attribute):
         return file_data
 
-
     html = multipleStructures(file_data, path=templatePath)
     if isinstance(html, abnormal.Attribute):
         return html
@@ -43,8 +47,9 @@ def specificTemplates(path: str, templatePath: str = None) \
     return html
 
 
-@appRegister
-def multipleStructures(data: dict | list, path: str = None) -> str | abnormal.Attribute | abnormal.Specification:
+@app()
+def multipleStructures(data: Union[dict, list], path: str = None) -> Union[
+    str, abnormal.Attribute, abnormal.Specification]:
     """
     多结构生成
     dict -> html
@@ -58,7 +63,7 @@ def multipleStructures(data: dict | list, path: str = None) -> str | abnormal.At
         i for i in dir(templates.Mainly) if not i.startswith("_")
     ]
 
-    def specification(data: dict) -> bool | abnormal.Specification:
+    def specification(data: dict) -> Union[bool, abnormal.Specification]:
         # 检查 data 是否包含 ["type", "parameters"]
         l = [
             i for i in ["type", "parameters"] if not (i in data)
@@ -66,9 +71,8 @@ def multipleStructures(data: dict | list, path: str = None) -> str | abnormal.At
         return True if len(l) == 0 else abnormal.Specification(' | '.join(l))
 
     def listProcessing(generate_manner: templates.Mainly,
-                       data: list[dataClass.ListOfData | dict]) \
-            -> str | abnormal.Attribute | abnormal.Specification | \
-               abnormal.TemplateTypeError | abnormal.Notemplates:
+                       data: List[Union[dataClass.ListOfData, dict]]) \
+            -> Union[str, abnormal.Attribute, abnormal.Specification, abnormal.TemplateTypeError, abnormal.Notemplates]:
         ju = []
         for i in data:
             # 检查
@@ -86,7 +90,9 @@ def multipleStructures(data: dict | list, path: str = None) -> str | abnormal.At
         return '\n'.join(ju)
 
     def dictionaryProcessing(generate_manner: templates.Mainly,
-                             data: dataClass.DictOfData | dict) -> str | abnormal.Attribute | abnormal.TemplateTypeError | abnormal.Notemplates:
+                             data: Union[
+                                 dataClass.DictOfData, dict]) -> Union[
+        str, abnormal.Attribute, abnormal.TemplateTypeError, abnormal.Notemplates]:
         ju = {}
         for key, value in data["parameters"].items():
             if isinstance(value, list):
@@ -150,8 +156,8 @@ def multipleStructures(data: dict | list, path: str = None) -> str | abnormal.At
         return listProcessing(mainly, data)
 
 
-@appRegister
-def templateLoader(data: dict) -> dict | abnormal.Fileread:
+@app()
+def templateLoader(data: dict) -> Union[dict, abnormal.Fileread]:
     """
     {file_DATA}/adminlteDATA/templates
     此加载器 会将一个文件夹内需要调用的一个文件夹进行调用
@@ -211,26 +217,36 @@ def templateLoader(data: dict) -> dict | abnormal.Fileread:
         return file_dict_recursion(data)
 
     except abnormal.Fileread as e:
+
         File.logs.plugInsOutput(e)
         return e
 
 
-def templateRead(path: str) -> dict | abnormal.Fileread:
+def templateRead(path: str) -> Union[dict, abnormal.Fileread]:
     """
     文件路径
     模板读取 相对路径 {file_DATA}/adminlteDATA/templates
     :param path:
     :return:
     """
-    path = os.path.join(method.dataFolders(config.dataPath), "templates", path)
+    getTemporaryFolders = helperFunctions.getAppRegister("Folders", "getTemporaryFolders")
+    if getTemporaryFolders == None:
+        return
+
+    path = os.path.join(getTemporaryFolders("templates"), path)
+    # path = os.path.join(method.dataFolders(config.dataPath), "templates", path)
     if os.path.isfile(path):
         return _open(path)
 
 
-def _open(path: str) -> dict | abnormal.Fileread:
+def _open(path: str) -> Union[dict, abnormal.Fileread]:
     try:
         with open(path.replace('/', "\\"), mode='r', encoding='utf-8') as f:
             return json.load(f)
 
     except Exception as e:
         return abnormal.Fileread(path, e, traceback.format_exc())
+
+
+getTemporaryFolders = helperFunctions.getAppRegister("Folders", "getTemporaryFolders")
+rich.inspect(getTemporaryFolders)

@@ -1,9 +1,10 @@
 import os.path
-from typing import Any
+from typing import Any, Union
 
 from flask import render_template
 from markupsafe import Markup
-from fileMapping import appRegister, getAppRegister
+from fileMapping.core.helperFunctions import getAppRegister
+# from fileMapping import appRegister, getAppRegister
 
 from .config import path
 
@@ -19,7 +20,7 @@ class Commons:
     def __init__(self, path):
         # 这个是对 self.path 的相对路径做出适配
         # 详情注释请看 /resources/static/pages/includes/.md
-        self.app = getAppRegister("flaskApp")
+        self.app = getAppRegister("fileFlask", "flaskApp")
         self.path = path
 
     def html(self, *args, **kwargs): ...
@@ -58,7 +59,7 @@ class Side(Commons):
             return self._regis("multi_li", title=title, li=li, url=url, icon=icon, **key)
 
         class Multi_title(Commons):
-            def html(self, title: str, i: str | int = '', **key) -> str:
+            def html(self, title: str, i: Union[str, int] = '', **key) -> str:
                 return self._regis("multi_title", title=title, i=i, **key)
 
     class Single_li(Commons):

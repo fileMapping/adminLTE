@@ -1,18 +1,20 @@
 # 这个一般是 adminLTE 插件第一次运行时的 init
 import json
 import os
+from typing import Union
 
-from fileMapping import File, method
+from fileMapping import File, helperFunctions
 
 from . import config
 
 
 def init(templates_path):
-    path = method.dataFolders(config.dataPath)  # 获取 data 文件夹
-    templates_path = os.path.join(path, templates_path)
-    _mkdir(templates_path)
-    createAFile(templates_path, fileTree)
-    createAProfile(path)
+    path = helperFunctions.getAppRegister("Folder", "getTemporaryFolders")
+    # path = method.dataFolders(config.dataPath)  # 获取 data 文件夹
+    # templates_path = os.path.join(path, templates_path)
+    # _mkdir(templates_path)
+    # createAFile(templates_path, fileTree)
+    # createAProfile(path)
 
 
 def createAProfile(file_path):
@@ -44,7 +46,7 @@ def createAFile(path: str, file_data: dict):
     _(path, file_data)
 
 
-def _open(path: str, data: str | dict) -> bool:
+def _open(path: str, data: Union[str, dict]) -> bool:
     try:
         with open(path, mode='w', encoding='utf-8') as f:
             if isinstance(data, dict):
