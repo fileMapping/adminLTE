@@ -4,7 +4,7 @@ import traceback
 import types
 from typing import Dict, Any, Union, List
 
-import rich
+
 # from fileMapping import File, method
 from fileMapping.core import decorators
 from fileMapping.core import helperFunctions

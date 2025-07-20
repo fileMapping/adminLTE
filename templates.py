@@ -1,8 +1,6 @@
 import os
 from typing import Union
 
-import rich
-
 from . import config
 # config
 
