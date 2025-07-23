@@ -8,6 +8,8 @@ from typing import Dict, Any, Union, List
 # from fileMapping import File, method
 from fileMapping.core import decorators
 from fileMapping.core import helperFunctions
+
+from plugins.adminLTE.abnormal import Fileread
 # from fileMapping import appRegister
 
 # from . import mainly
@@ -222,18 +224,19 @@ def templateLoader(data: dict) -> Union[dict, abnormal.Fileread]:
         return e
 
 
-def templateRead(path: str) -> Union[dict, abnormal.Fileread]:
+def templateRead(path: str) -> Union[None, dict, Fileread]:
     """
     文件路径
     模板读取 相对路径 {file_DATA}/adminlteDATA/templates
     :param path:
     :return:
     """
-    getTemporaryFolders = helperFunctions.getAppRegister("Folders", "getTemporaryFolders")
-    if getTemporaryFolders == None:
+    getTheDataFolder = helperFunctions.getAppRegister("Folders", "getTheDataFolder")
+    if getTheDataFolder == None:
         return
 
-    path = os.path.join(getTemporaryFolders("templates"), path)
+    p = getTheDataFolder(config.dataPath)
+    path = os.path.join(p, config.templates_path, path)
     # path = os.path.join(method.dataFolders(config.dataPath), "templates", path)
     if os.path.isfile(path):
         return _open(path)
@@ -249,4 +252,3 @@ def _open(path: str) -> Union[dict, abnormal.Fileread]:
 
 
 getTemporaryFolders = helperFunctions.getAppRegister("Folders", "getTemporaryFolders")
-rich.inspect(getTemporaryFolders)

@@ -16,13 +16,16 @@ from . import config
 from . import init
 
 
-def main():
-    path = helperFunctions.getAppRegister("Folder", "getTemporaryFolders")
+def main(fileMapping: File):
+    path = helperFunctions.getAppRegister("Folders", "getTemporaryFolders")
     path = path(__dataFolders__[0])
 
     if os.listdir(path).__len__() == 0:
         # 创建初始化
         init.init(config.templates_path)
+
+    templates.mainly = templates.Mainly(fileMapping.plugInRunData.pluginConfig["adminLTE"]["path"])
+    # 这个地方需要修改，需要传入插件的配置
 
 
 __dataFolders__ = [config.dataPath]
